@@ -2,18 +2,32 @@ import pygame
 import numpy as np
 from flicky import FlickyManager
 from keyboard import generate_font, writePhrase
+import time
+import os
+import glob
+from CCA import CCA
 # from keyboard import 
-
 grid = ["ABCDEFGHI",
         "JKLMNOPQR",
         "STUVWXYZ0",
         "123456789"
         ]
 phrase = "Result: " #this is used to store the string at the bottom of the interface
-
+# defines samples per second
+SAMPLES_PER_SECOND = 500
+# defines the window size for the cca computation
+window_size_in_seconds = 4;
 waittime = 1000   #milliseconds
 frames = 0  #to caculate framse
+# saving path for bmp file
 saving_file = "D://KIT//semester_3//research_project//workspace//image//60Hz//"
+# saving path for eeg data
+file = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/recordings/20211203131851_N.easy'
+# saving path for cca result
+savepath = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/result/N_32/'
+if not os.path.exists(savepath):
+    os.mkdir(savepath)
+##########################################################    
 image = []
 grid = [''.join(s) for s in zip(*grid)]  #transpose
 rows = len(grid)
@@ -94,10 +108,12 @@ while End_test==False:
 #        sleep(5)   #stop for certain seconds
         screen.fill((0,0,0))
         pygame.display.update()
-        pygame.time.wait(5000)  #stop for certain milliseconds
+        # pygame.time.wait(5000)  #stop for certain milliseconds
         frames = 0
     ############ Analysis ####################
-    
+    frq_index = CCA(file, savepath, SAMPLES_PER_SECOND, window_size_in_seconds) # determine the frequency of EEG
+    letters_to_be_typed = grid[frq_index]
+    phrase.append(letters_to_be_typed)
     #################################################
         
         

@@ -1,8 +1,15 @@
 import numpy as np
 from sklearn.cross_decomposition import CCA
+import csv
+
+# function for reading the csv file into a numpy array
+def read_easy(file):
+    with open(file) as csv_file:
+        values = np.array(list(csv.reader(csv_file, delimiter='\t')))
+        print('Read file and found values with shape:', values.shape)
+    return values
+
 #import reader
-
-
 def ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, base_frequ, harmonics, amplitude=1):
     """
 
@@ -31,14 +38,6 @@ def calc_cca(channels, SAMPLES_PER_SECOND, f, amount_of_sec=3):
     :return:
     '''
     print('f: ', f, ' amount_s: ', amount_of_sec)
-#    if f == 7.5:
-#        p1 = ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, 7.5, [1, 2, 3])
-#    elif f == 40:
-#        p1 = ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, 40, [0.5, 1, 2])
-#    elif f == 12:
-#        p1 = ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, 12, [1, 2, 3])
-#    else:
-#        print('frequency not supported in cca')
     p1 = ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, f, [1, 2, 3])
 
     # now windowing:

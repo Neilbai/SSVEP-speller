@@ -1,5 +1,6 @@
 """
 Example CCA-from Marius
+Independent CCA script
 """
 
 import time
