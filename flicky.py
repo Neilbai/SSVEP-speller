@@ -6,7 +6,7 @@ class FlickyManager:
         self.height = height
     def add(self,x,y,width,height,letter,freq):
         x = width * x + width/4
-        y = height * y + height/4
+        y = height * (y + 1) + height/4
         f = Flicky(x,y,letter,freq) # letter image of all frames
         self.flickies.append(f)
     def process(self,frames):

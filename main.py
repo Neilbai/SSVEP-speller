@@ -1,7 +1,7 @@
 import pygame 
 import numpy as np
 from flicky import FlickyManager
-from keyboard import generate_font
+from keyboard import generate_font, writePhrase
 # from keyboard import 
 
 grid = ["ABCDEFGHI",
@@ -9,9 +9,11 @@ grid = ["ABCDEFGHI",
         "STUVWXYZ0",
         "123456789"
         ]
+phrase = "Result: " #this is used to store the string at the bottom of the interface
+
 waittime = 1000   #milliseconds
 frames = 0  #to caculate framse
-saving_file = "D:\\KIT\\semester_3\\research_project\\workspace\\pySSVEP-master\\src\\image\\120Hz\\"
+saving_file = "D://KIT//semester_3//research_project//workspace//image//60Hz//"
 image = []
 grid = [''.join(s) for s in zip(*grid)]  #transpose
 rows = len(grid)
@@ -29,17 +31,17 @@ screen = pygame.display.set_mode((0, 0),pygame.FULLSCREEN)
 pygame.display.set_caption("SSVEP_SPELLER")
 screenrect = screen.get_rect()  #get the size of screen
 width = screenrect.width / rows
-height = screenrect.height / columns
+height = screenrect.height / (columns + 1)
 End_test = False
 clock = pygame.time.Clock()
 # generate image for all the frames
-# Image = generate_font(freq,4,120,grid,saving_file) # draw the letter for all frames,freq*frames
+# Image = generate_font(freq,4,60,grid,saving_file) # draw the letter for all frames,freq*frames
 # load the image
 Image = [[] for i in range(len(freq))]
 total_frames = 240
 for i in range(len(freq)):
     for j in range(total_frames):
-        file_name = 'letter'+str(freq[i])+'frame'+str(j)
+        file_name = grid[i]+str(freq[i])+'frame'+str(j)
         image = pygame.image.load(saving_file+file_name+'.bmp')
         Image[i].append(image)
 
@@ -49,8 +51,8 @@ flickymanager = FlickyManager(screen,width,height)
 
 
 ############for single letter####################
-m = 0; #selected letter
-flickymanager.add(4,1.5,width,height,Image[m],freq[m])
+# m = 0; #selected letter
+# flickymanager.add(4,1.5,width,height,Image[m],freq[m])
 #################################################
 
 #############for the 3*3 keyboard##############
@@ -60,9 +62,9 @@ flickymanager.add(4,1.5,width,height,Image[m],freq[m])
 ################################################
 
 ##############for the whole keyboard###############
-# for n in range(columns):
-#     for m in range(rows):
-#         flickymanager.add(m,n,width,height,Image[columns*m+n],freq[columns*m+n])  
+for n in range(columns):
+    for m in range(rows):
+        flickymanager.add(m,n,width,height,Image[columns*m+n],freq[columns*m+n])  
 ##################################################
 font = pygame.font.SysFont("None", 200)
 text = font.render('Test Start', True, (255, 255, 255))
@@ -83,6 +85,7 @@ while End_test==False:
     ###########################
     flickymanager.process(frames)
     flickymanager.draw()
+    writePhrase(screen,phrase,width,height)
     pygame.display.flip()
     ##########################
     #above process should be finished in one frame
@@ -93,4 +96,9 @@ while End_test==False:
         pygame.display.update()
         pygame.time.wait(5000)  #stop for certain milliseconds
         frames = 0
+    ############ Analysis ####################
+    
+    #################################################
+        
+        
 pygame.quit()

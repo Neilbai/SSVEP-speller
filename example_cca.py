@@ -20,8 +20,8 @@ from canonicalca import calc_cca
 # # filepaths = os.getcwd() + '/*.easy'  #return the current directory 
 # filepaths = os.path.dirname(rootdir) + '/*.easy'
 # filelist = glob.glob(filepaths)     #get all easyfiles
-file = 'D:/KIT/semester_3/research_project/21_12_03_SSVEP_Speller_2/recordings/20211203131700_E.easy'
-savepath = 'D:/KIT/semester_3/research_project/21_12_03_SSVEP_Speller_2/result/E_11.75/'
+file = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/recordings/20211203131851_N.easy'
+savepath = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/result/N_32/'
 if not os.path.exists(savepath):
     os.mkdir(savepath)
 # defines samples per second
@@ -51,8 +51,13 @@ marker = np.where(marker_channel != 0)[0][1:-1]
 
 # clip eeg channels of used electrodes
 useful_channels = data[:, [0, 1, 2, 3, 4, 5, 6, 7]]
-frqeucies = [12, 12.25, 12.5, 11.75]
-
+# frqeucies = [12, 12.25, 12.5, 11.75]
+freq = [np.linspace(8,16,9),
+        np.linspace(8.25,16.25,9),
+        np.linspace(8.5,16.5,9),
+        np.linspace(8.75,16.75,9)]
+freq = np.array(freq).transpose()
+frqeucies = freq.flatten()
 
 for frqeucy in frqeucies:
     
