@@ -1,11 +1,12 @@
 import pygame 
 import numpy as np
-from flicky import FlickyManager
-from keyboard import generate_font, writePhrase
 import time
 import os
-import glob
+
+from flicky import FlickyManager
+from keyboard import generate_font, writePhrase
 from CCA import CCA
+from lab_stream_layer import lsl
 # from keyboard import 
 grid = ["ABCDEFGHI",
         "JKLMNOPQR",
@@ -16,15 +17,22 @@ phrase = "Result: " #this is used to store the string at the bottom of the inter
 # defines samples per second
 SAMPLES_PER_SECOND = 500
 # defines the window size for the cca computation
-window_size_in_seconds = 4;
+window_size_in_seconds = 4
+refreshing_rate = 60
+total_frames = window_size_in_seconds * refreshing_rate
 waittime = 1000   #milliseconds
 frames = 0  #to caculate framse
 # saving path for bmp file
 saving_file = "D://KIT//semester_3//research_project//workspace//image//60Hz//"
 # saving path for eeg data
-file = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/recordings/20211203131851_N.easy'
+sourcefile = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/recordings/20211203131851_N.easy'
 # saving path for cca result
 savepath = 'D:/KIT/semester_3/research_project/workspace/03_CCA_analysis/database/21_12_03_SSVEP_Speller_2/result/N_32/'
+# saving path for csv file
+resultfile = 'D:\\KIT\\semester_3\\research_project\\workspace\\02_EasyFile_to_LSL_Streamer\\easy_result.csv'
+
+
+
 if not os.path.exists(savepath):
     os.mkdir(savepath)
 ##########################################################    
@@ -52,7 +60,6 @@ clock = pygame.time.Clock()
 # Image = generate_font(freq,4,60,grid,saving_file) # draw the letter for all frames,freq*frames
 # load the image
 Image = [[] for i in range(len(freq))]
-total_frames = 240
 for i in range(len(freq)):
     for j in range(total_frames):
         file_name = grid[i]+str(freq[i])+'frame'+str(j)
@@ -104,17 +111,16 @@ while End_test==False:
     ##########################
     #above process should be finished in one frame
     frames += 1
-    if frames == 240:   #60 framas per second, flickering for 4s
+    if frames == total_frames:   #60 framas per second, flickering for 4s
 #        sleep(5)   #stop for certain seconds
         screen.fill((0,0,0))
         pygame.display.update()
         # pygame.time.wait(5000)  #stop for certain milliseconds
-        frames = 0
-    ############ Analysis ####################
-    frq_index = CCA(file, savepath, SAMPLES_PER_SECOND, window_size_in_seconds) # determine the frequency of EEG
-    letters_to_be_typed = grid[frq_index]
-    phrase.append(letters_to_be_typed)
-    #################################################
-        
-        
+        ############ Analysis ####################
+        # lsl(sourcefile, resultfile)
+        frq_index = CCA(sourcefile, savepath, SAMPLES_PER_SECOND, window_size_in_seconds) # determine the frequency of EEG
+        letters_to_be_typed = grid[frq_index]
+        phrase = phrase + letters_to_be_typed
+        #################################################
+        frames = 0    
 pygame.quit()
