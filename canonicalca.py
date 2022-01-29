@@ -3,9 +3,9 @@ from sklearn.cross_decomposition import CCA
 import csv
 
 # function for reading the csv file into a numpy array
-def read_easy(file):
+def read_file(file):
     with open(file) as csv_file:
-        values = np.array(list(csv.reader(csv_file, delimiter='\t')))
+        values = np.array(list(csv.reader(csv_file, delimiter=',')))
         print('Read file and found values with shape:', values.shape)
     return values
 
