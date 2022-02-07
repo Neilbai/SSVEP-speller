@@ -37,11 +37,11 @@ def calc_cca(channels, SAMPLES_PER_SECOND, f, amount_of_sec=3):
     :param amount_of_sec: of the window
     :return:
     '''
-    print('f: ', f, ' amount_s: ', amount_of_sec)
+    # print('f: ', f, ' amount_s: ', amount_of_sec)
     p1 = ref_frequencies_for_cca(amount_of_sec, SAMPLES_PER_SECOND, f, [1, 2, 3])
 
     # now windowing:
-    window_length = amount_of_sec * SAMPLES_PER_SECOND
+    window_length = amount_of_sec * SAMPLES_PER_SECOND 
     window_shift = 30  # die jungs nutzen wohl 30
     n_comp = 6  # earlier: 6, sklearn default=2
 
@@ -51,6 +51,7 @@ def calc_cca(channels, SAMPLES_PER_SECOND, f, amount_of_sec=3):
     score_max = []
 
     xs = np.arange(0, channels.shape[0] - window_length, window_shift)
+    # print(xs)
     p1 = np.asarray(p1)
 
     for i in xs:  # hier soll 1 Zahl pro Zeitschritt rauskommen

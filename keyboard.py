@@ -30,4 +30,11 @@ def writePhrase(screen,phrase,width,height):
     mytext = mytext.convert_alpha()
     text_rect = mytext.get_rect()
     screen.blit(mytext, (0, height/5))
-        
+
+# mark the letter in red as a hint for the tester
+# def hint():
+    # myfont = pygame.font.SysFont("None", 200)
+    # mytext = myfont.render(phrase, True, (255,255,255))
+    # mytext = mytext.convert_alpha()
+    # text_rect = mytext.get_rect()
+    # screen.blit(mytext, (0, height/5))
