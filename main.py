@@ -2,9 +2,9 @@ import pygame
 import numpy as np
 
 from flicky import FlickyManager
-from keyboard import generate_font, writePhrase
+from keyboard import generate_font, writePhrase, hint
 from CCA import CCA
-from lab_stream_layer import lsl, write_marker, read_from_Enobio
+from lab_stream_layer import lsl, write_marker
 from pylsl import StreamInfo, StreamOutlet, resolve_stream
 # from keyboard import 
 grid = ["ABCDEFGHI",
@@ -13,6 +13,7 @@ grid = ["ABCDEFGHI",
         "123456789"
         ]
 phrase = "Result: " #this is used to store the string at the bottom of the interface
+letter_to_be_printed = []
 result = [] # to save the freq_index of each iteration, which is used to measure the correct rate 
 # defines samples per second
 SAMPLES_PER_SECOND = 500
@@ -22,29 +23,25 @@ refreshing_rate = 60
 total_frames = window_size_in_seconds * refreshing_rate
 waittime = 1000   #milliseconds
 frames = 0  #to caculate framse
-marker_number = 111111 # initial marker nunber
+marker_start = 111111 # initial marker nunber
+marker_end = 222222
+
 # saving path for bmp file
 saving_file = "D://KIT//semester_3//research_project//workspace//image//60Hz//"
 # saving path for eeg data
 sourcefile = 'D:\\KIT\\semester_3\\research_project\\21_12_03_SSVEP_Speller_3\\20220201183108_lsl_test1.easy'
 # saving path for cca result
 savepath = 'C:/Users/MetisVidere/Desktop/Bai_measurement/'
-# saving path for csv file
-resultfile = 'D:\\KIT\\semester_3\\research_project\\21_12_03_SSVEP_Speller_3\\easy_result.csv'
 # parameters for lab-streamig layer
 info = StreamInfo('MarkerStream','Markers',1,0,'int32','AttentionLabels')
 outlet = StreamOutlet(info)
-# stream_name = 'MarkerStream'
-# streams = resolve_stream('type', 'EEG')
-# markers = resolve_stream('type', 'Markers')
-# if not os.path.exists(savepath):
-#     os.mkdir(savepath)
+
 ##########################################################    
 image = []
 grid = [''.join(s) for s in zip(*grid)]  #transpose
 rows = len(grid)
 columns = len(grid[0])      #save the rows and cols
-grid = [y for x in grid for y in x]  # then flatten the grid
+flat_grid = [y for x in grid for y in x]  # then flatten the grid
 freq = [np.linspace(8,16,9),
         np.linspace(8.25,16.25,9),
         np.linspace(8.5,16.5,9),
@@ -60,18 +57,18 @@ height = screenrect.height / (columns + 1)
 End_test = False
 clock = pygame.time.Clock()
 # generate image for all the frames
-# Image = generate_font(freq,4,60,grid,saving_file) # draw the letter for all frames,freq*frames
+# Image = generate_font(freq,4,60,flat_grid,saving_file) # draw the letter for all frames,freq*frames
 # load the image
 Image = [[] for i in range(len(freq))]
 for i in range(len(freq)):
     for j in range(total_frames):
-        file_name = grid[i]+str(freq[i])+'frame'+str(j)
+        file_name = flat_grid[i]+str(freq[i])+'frame'+str(j)
         image = pygame.image.load(saving_file+file_name+'.bmp')
         Image[i].append(image)
 
-# data = lsl(sourcefile, num_of_lines = 3000)
+# data = lsl(sourcefile)
 # frq_index, data = CCA(data, SAMPLES_PER_SECOND, 2) # determine the frequency of EEG
-# letters_to_be_typed = grid[frq_index]
+# letters_to_be_typed = flat_grid[frq_index]
 # phrase = phrase + letters_to_be_typed
 # print(frq_index)
 # # print(phrase)
@@ -81,8 +78,8 @@ flickymanager = FlickyManager(screen,width,height)
 
 
 ############for single letter####################
-m = 0; #selected letter
-flickymanager.add(4,1.5,width,height,Image[m],freq[m])
+# m = 0; #selected letter
+# flickymanager.add(4,1.5,width,height,Image[m],freq[m])
 #################################################
 
 # ############for the 3*3 keyboard##############
@@ -92,20 +89,25 @@ flickymanager.add(4,1.5,width,height,Image[m],freq[m])
 # ###############################################
 
 # # #############for the whole keyboard###############
-# for n in range(columns):
-#     for m in range(rows):
-#         flickymanager.add(m,n,width,height,Image[columns*m+n],freq[columns*m+n])  
+for n in range(columns):
+    for m in range(rows):
+        flickymanager.add(m,n,width,height,Image[columns*m+n],freq[columns*m+n])  
 # # #################################################
 font = pygame.font.SysFont("None", 200)
 text = font.render('Test Start', True, (255, 255, 255))
 text_rect = text.get_rect()
 screen.blit(text, (screenrect.width/2-text_rect.width/2,screenrect.height/2-text_rect.height/2))
 pygame.display.flip()
-pygame.time.wait(waittime)     
-# hint()  
+pygame.time.wait(waittime)   
+screen.fill((0,0,0))  
+num_of_red_letter = np.random.randint(0,35)
+letter_to_be_printed.append(flat_grid[num_of_red_letter]) 
+hint(screen, grid, num_of_red_letter, width, height) 
+pygame.display.flip()
+pygame.time.wait(waittime)  
 #iterations
-write_marker(marker_number,outlet) # marker for begin
-marker_number += marker_number 
+write_marker(marker_start,outlet) # marker for begin
+marker_start += 1 
 while End_test==False: 
     for event in pygame.event.get():
         if (event.type == pygame.KEYUP) or (event.type == pygame.KEYDOWN):
@@ -124,24 +126,26 @@ while End_test==False:
     ##########################
     #above process should be finished in one frame
     if frames == total_frames:   #60 framas per second, flickering for 4s
-#        sleep(5)   #stop for certain seconds
+        # sleep(5)   #stop for certain seconds
         screen.fill((0,0,0))
         pygame.display.update()
-        write_marker(marker_number,outlet) #marker for ending
-        marker_number += marker_number 
-        # pygame.time.wait(1000)  #stop for certain milliseconds
+        # write_marker(marker_end,outlet) #marker for ending
+        # marker_end += 1 
+        # pygame.time.wait(3000)  #stop for certain milliseconds
         ############ Analysis ####################
-        # lsl(sourcefile, resultfile)
-        # samples = read_from_Enobio(stream_name, streams)
-        # markers = read_from_Enobio(stream_name, markers)
-        ##########################################
-        # frq_index = CCA(resultfile, savepath, SAMPLES_PER_SECOND, 2) # determine the frequency of EEG
-        # letters_to_be_typed = grid[frq_index[0]]
+        # data = lsl(sourcefile)
+        #########################################
+        # frq_index, data = CCA(data, SAMPLES_PER_SECOND, 2) # determine the frequency of EEG
+        # letters_to_be_typed = flat_grid[frq_index]
         # phrase = phrase + letters_to_be_typed
         # result.append(frq_index)
-        #################################################
-        write_marker(marker_number,outlet) # marker for begin
-        marker_number += marker_number 
+        ################################################
+        # write_marker(marker_start,outlet) # marker for begin
+        # marker_start += 1 
         frames = 0  
-        # hint()
+        num_of_red_letter = np.random.randint(0,35)
+        letter_to_be_printed.append(flat_grid[num_of_red_letter]) 
+        hint(screen, grid, num_of_red_letter, width, height)
+        pygame.display.flip()
+        pygame.time.wait(waittime)
 pygame.quit()

@@ -32,9 +32,23 @@ def writePhrase(screen,phrase,width,height):
     screen.blit(mytext, (0, height/5))
 
 # mark the letter in red as a hint for the tester
-# def hint():
-    # myfont = pygame.font.SysFont("None", 200)
-    # mytext = myfont.render(phrase, True, (255,255,255))
-    # mytext = mytext.convert_alpha()
-    # text_rect = mytext.get_rect()
-    # screen.blit(mytext, (0, height/5))
+def hint(screen, grid, num_of_red_letter, width, height):
+    rows = len(grid)
+    columns = len(grid[0])  
+    flat_grid = [y for x in grid for y in x]
+    red_letter = flat_grid[num_of_red_letter]
+    myfont = pygame.font.SysFont("None", 200)
+    # print(red_letter)
+    for n in range(columns):
+        for m in range(rows):
+            if grid[m][n] != red_letter:
+                mytext = myfont.render(grid[m][n], True, (255,255,255))
+                
+            else:
+                mytext = myfont.render(grid[m][n], True, (255,0,0))
+            mytext = mytext.convert_alpha()
+            x = width * m + width/4
+            y = height * (n + 1) + height/4
+            screen.blit(mytext, (x, y))
+        
+    
