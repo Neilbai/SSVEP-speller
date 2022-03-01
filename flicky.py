@@ -28,4 +28,6 @@ class Flicky(object):
     def process(self,frames):
         self.image = self.letter[frames]
     def draw(self,screen):
-        screen.blit(self.image, (self.x, self.y))
+        width = self.image.get_width()
+        height = self.image.get_height()
+        screen.blit(self.image, (self.x - width/4, self.y - height/4))
